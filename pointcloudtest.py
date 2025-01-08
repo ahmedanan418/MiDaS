@@ -1,5 +1,6 @@
 import open3d as o3d
 import numpy as np
+import os
 import pickle
 
 def load_calibration_data():
@@ -27,7 +28,6 @@ depth_img = o3d.geometry.Image(depth_img_np)
 
 # Load camera calibration parameters
 cameraMatrix, dist = load_calibration_data()
-print("Camera matrix:", cameraMatrix)
 
 # Convert cameraMatrix to Open3D intrinsic
 fx, fy = cameraMatrix[0, 0], cameraMatrix[1, 1]
@@ -36,7 +36,6 @@ width, height = np.asarray(rgb_img).shape[1], np.asarray(rgb_img).shape[0]
 
 intrinsic = o3d.camera.PinholeCameraIntrinsic()
 intrinsic.set_intrinsics(width=width, height=height, fx=fx, fy=fy, cx=cx, cy=cy)
-print("Intrinsic Parameters:", intrinsic)
 
 # Create RGBD Image
 try:
@@ -51,7 +50,20 @@ except Exception as e:
 # Generate Point Cloud
 try:
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_img, intrinsic)
-    print("Point cloud created successfully.")
+    
+    try:
+        # Save the point cloud to a file
+        output_dir = "Pointclouds"
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        output_file = os.path.join(output_dir, "point_cloud.ply")   # You can change the filename and format as needed
+        o3d.io.write_point_cloud(output_file, pcd)
+        print(f"Point cloud saved successfully to {output_file}.")
+    
+    except Exception as e:
+        print("Cannot save pointcloud", e)
+    
+    # Visualize pointcloud
     o3d.visualization.draw_geometries([pcd])
 except Exception as e:
     print("Error creating Point Cloud:", e)
