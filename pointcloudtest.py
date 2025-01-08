@@ -50,7 +50,7 @@ except Exception as e:
 # Generate Point Cloud
 try:
     pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_img, intrinsic)
-    
+    pcd.transform([[1, 0, 0, 0],[0, -1, 0, 0],[0, 0, -1, 0],[0, 0, 0, 1]])
     try:
         # Save the point cloud to a file
         output_dir = "Pointclouds"

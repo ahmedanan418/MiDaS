@@ -1,0 +1,1 @@
+ python run.py --model_type dpt_swin2_large_384 --input_path input --output_path output
